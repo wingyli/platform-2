@@ -27,6 +27,9 @@ class Hero {
     this.dy = gridSize * -(1/3)
   }
   step() {
+    let prevX = this.x
+    let prevY = this.y
+
     // move the hero position (x,y) by speed (dx,dy)
     this.x += this.dx
     this.y += this.dy
@@ -38,11 +41,19 @@ class Hero {
     this.dy += 1/60 * gridSize
 
     // todo check for collisions
-    let ground = canvas.height
-    if (this.y > ground) {
+    let collidingPlatform = undefined
+    grounds.forEach(ground => {
+      let wasAbove = ground.isBelow(prevX, prevY)
+      let isInside = ground.contains(this.x, this.y)
+      if (wasAbove && isInside) {
+        collidingPlatform = ground
+      }
+    })
+
+    if (collidingPlatform !== undefined) {
       this.airborne = false
       this.dy = 0
-      this.y = ground
+      this.y = collidingPlatform.y
     }
 
     // todo check for falling below screen
